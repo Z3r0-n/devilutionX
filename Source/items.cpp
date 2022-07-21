@@ -1970,14 +1970,6 @@ void SpawnOnePremium(Item &premiumItem, int plvl, Player &player)
 		GetItemAttrs(premiumItem, itemType, plvl);
 		GetItemBonus(premiumItem, plvl / 2, plvl, true, !gbIsHellfire);
 
-		if (!gbIsHellfire) {
-			if (premiumItem._iIvalue > 140000) {
-				keepGoing = true; // prevent breaking the do/while loop too early by failing hellfire's condition in while
-				continue;
-			}
-			break;
-		}
-
 		switch (premiumItem._itype) {
 		case ItemType::LightArmor:
 		case ItemType::MediumArmor:
@@ -2014,8 +2006,7 @@ void SpawnOnePremium(Item &premiumItem, int plvl, Player &player)
 		count++;
 	} while (keepGoing
 	    || ((
-	            premiumItem._iIvalue > 200000
-	            || premiumItem._iMinStr > strength
+	            premiumItem._iMinStr > strength
 	            || premiumItem._iMinMag > magic
 	            || premiumItem._iMinDex > dexterity
 	            || premiumItem._iIvalue < itemValue)
@@ -4029,10 +4020,8 @@ void SpawnSmith(int lvl)
 {
 	constexpr int PinnedItemCount = 0;
 
-	int maxValue = 140000;
 	int maxItems = 20;
 	if (gbIsHellfire) {
-		maxValue = 200000;
 		maxItems = 25;
 	}
 
@@ -4040,13 +4029,11 @@ void SpawnSmith(int lvl)
 	for (int i = 0; i < iCnt; i++) {
 		Item &newItem = smithitem[i];
 
-		do {
-			newItem = {};
-			newItem._iSeed = AdvanceRndSeed();
-			SetRndSeed(newItem._iSeed);
-			int itemData = RndSmithItem(lvl) - 1;
-			GetItemAttrs(newItem, itemData, lvl);
-		} while (newItem._iIvalue > maxValue);
+		newItem = {};
+		newItem._iSeed = AdvanceRndSeed();
+		SetRndSeed(newItem._iSeed);
+		int itemData = RndSmithItem(lvl) - 1;
+		GetItemAttrs(newItem, itemData, lvl);
 
 		newItem._iCreateInfo = lvl | CF_SMITH;
 		newItem._iIdentified = true;
@@ -4101,7 +4088,6 @@ void SpawnWitch(int lvl)
 	const int pinnedBookCount = gbIsHellfire ? GenerateRnd(MaxPinnedBookCount) : 0;
 	const int reservedItems = gbIsHellfire ? 10 : 17;
 	const int itemCount = GenerateRnd(WITCH_ITEMS - reservedItems) + 10;
-	const int maxValue = gbIsHellfire ? 200000 : 140000;
 
 	for (int i = 0; i < WITCH_ITEMS; i++) {
 		Item &item = witchitem[i];
@@ -4135,20 +4121,18 @@ void SpawnWitch(int lvl)
 			continue;
 		}
 
-		do {
-			item = {};
-			item._iSeed = AdvanceRndSeed();
-			SetRndSeed(item._iSeed);
-			int itemData = RndWitchItem(lvl) - 1;
-			GetItemAttrs(item, itemData, lvl);
-			int maxlvl = -1;
-			if (GenerateRnd(100) <= 5)
-				maxlvl = 2 * lvl;
-			if (maxlvl == -1 && item._iMiscId == IMISC_STAFF)
-				maxlvl = 2 * lvl;
-			if (maxlvl != -1)
-				GetItemBonus(item, maxlvl / 2, maxlvl, true, true);
-		} while (item._iIvalue > maxValue);
+		item = {};
+		item._iSeed = AdvanceRndSeed();
+		SetRndSeed(item._iSeed);
+		int itemData = RndWitchItem(lvl) - 1;
+		GetItemAttrs(item, itemData, lvl);
+		int maxlvl = -1;
+		if (GenerateRnd(100) <= 5)
+			maxlvl = 2 * lvl;
+		if (maxlvl == -1 && item._iMiscId == IMISC_STAFF)
+			maxlvl = 2 * lvl;
+		if (maxlvl != -1)
+			GetItemBonus(item, maxlvl / 2, maxlvl, true, true);
 
 		item._iCreateInfo = lvl | CF_WITCH;
 		item._iIdentified = true;
@@ -4183,14 +4167,6 @@ void SpawnBoy(int lvl)
 		int itype = RndBoyItem(lvl) - 1;
 		GetItemAttrs(boyitem, itype, lvl);
 		GetItemBonus(boyitem, lvl, 2 * lvl, true, true);
-
-		if (!gbIsHellfire) {
-			if (boyitem._iIvalue > 90000) {
-				keepgoing = true; // prevent breaking the do/while loop too early by failing hellfire's condition in while
-				continue;
-			}
-			break;
-		}
 
 		ivalue = 0;
 
@@ -4260,8 +4236,7 @@ void SpawnBoy(int lvl)
 		}
 	} while (keepgoing
 	    || ((
-	            boyitem._iIvalue > 200000
-	            || boyitem._iMinStr > strength
+	            boyitem._iMinStr > strength
 	            || boyitem._iMinMag > magic
 	            || boyitem._iMinDex > dexterity
 	            || boyitem._iIvalue < ivalue)
